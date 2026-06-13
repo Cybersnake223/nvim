@@ -1,112 +1,238 @@
 # nvim
 
-Personal Neovim configuration powered by [lazy.nvim](https://github.com/folke/lazy.nvim).
+Personal Neovim config for data science, SQL, and everyday development.
 
-## Structure
+## Highlights
+
+- **Data Science** — Molten (Jupyter), Quarto, image.nvim, jupytext
+- **SQL** — nvim-dbee client + dadbod completion via blink.cmp
+- **LSP** — ruff, lua_ls, sqls, bashls, marksman via mason
+- **Fast picker** — Snacks picker replaces telescope (files, grep, buffers, recent, help, keymaps)
+- **Snacks ecosystem** — explorer, terminal, indent guides, words, notifier, session
+- **Neogit** — Magit-like Git UI with diffview integration
+- **Markdown rendering** — render-markdown.nvim in quarto/markdown files
+
+## File Structure
 
 ```
 ~/.config/nvim/
-├── init.lua              # Entry point: bootstrap, autocommands
-├── lazy-lock.json        # Plugin version lockfile
-├── .stylua.toml          # StyLua formatter settings
+├── init.lua                  # Bootstrap, autocommands
+├── lazy-lock.json            # Plugin lockfile
+├── .stylua.toml              # StyLua config
 └── lua/
-    ├── options.lua        # Core options (leader, UI, indent, providers)
-    ├── mappings.lua       # Keymaps (editing, windows, git, LSP, data science)
-    ├── commands.lua       # User commands & autocommands
+    ├── options.lua            # Editor options, providers, paths
+    ├── mappings.lua           # All keymaps
+    ├── commands.lua           # User commands + autocmds
     └── plugins/
-        ├── init.lua       # Plugin specs & setup
-        └── configs/       # Per-plugin configuration modules
-            ├── blink_conf.lua
-            ├── conform.lua
-            ├── dbee.lua
-            ├── lspconfig.lua
-            ├── lualine.lua
-            ├── nightfox.lua
-            ├── snacks.lua
-            └── treesitter.lua
+        ├── init.lua           # Plugin specs (50+ plugins)
+        └── configs/           # Per-plugin config
+            ├── blink_conf.lua # Completion engine
+            ├── conform.lua    # Format on save
+            ├── dbee.lua       # SQL client
+            ├── lspconfig.lua  # LSP attach, per-server settings
+            ├── lualine.lua    # Statusline + tabline
+            ├── nightfox.lua   # Colorscheme + highlights
+            ├── snacks.lua     # Snacks modules
+            └── treesitter.lua # Parsers + language setup
 ```
 
-## Features
+## Plugins
 
 ### LSP & Completion
-- **mason.nvim** — manage LSP servers, formatters, and linters
-- **nvim-lspconfig** — configured: `lua_ls`, `ruff`, `sqls`, `bashls`, `marksman`
-- **blink.cmp** — fast completion with LSP, snippets, buffer, path, and dadbod sources
-- **luasnip** + **friendly-snippets** — snippet engine and collection
+
+| Plugin               | Role                                |
+|----------------------|-------------------------------------|
+| mason.nvim           | LSP/formatter/linter installer      |
+| mason-lspconfig.nvim | Auto-install: lua_ls, ruff, sqls, bashls, marksman |
+| nvim-lspconfig       | LSP client config + keymaps          |
+| blink.cmp            | Completion engine (Rust fuzzy)       |
+| LuaSnip              | Snippet engine                       |
+| friendly-snippets    | Snippet collection                   |
+| lazydev.nvim         | Lua LSP library annotations          |
+| nvim-autopairs       | Auto-close brackets                  |
 
 ### Formatting & Linting
-- **conform.nvim** — format on save (StyLua, ruff, LSP formatters)
-- **nvim-lint** — async linting with ruff, shellcheck, sqlfluff
-- Auto-trim trailing whitespace on save
+
+| Plugin      | Role                          |
+|-------------|--------------------------------|
+| conform.nvim| Format on save (StyLua, ruff, LSP) |
+| nvim-lint   | Async linting (ruff, shellcheck, sqlfluff) |
+| Auto-trim trailing whitespace on save |
 
 ### Data Science
-- **quarto-nvim** + **otter.nvim** — Quarto notebook support with inline Python execution
-- **molten-nvim** — Jupyter kernel integration for markdown/quarto/ipynb
-- **image.nvim** — image rendering (Kitty terminal) inside notebooks
-- **jupytext.nvim** — paired `.ipynb` ↔ markdown workflow
-- `:NewNotebook <name>` — scaffold a new `.ipynb`
+
+| Plugin            | Role                                    |
+|-------------------|-----------------------------------------|
+| quarto-nvim       | Quarto notebook + multilevel LSP        |
+| otter.nvim        | Inline language LSP in Quarto/markdown  |
+| molten-nvim       | Jupyter kernel (run cells, show output) |
+| image.nvim        | Image rendering in Kitty terminal       |
+| jupytext.nvim     | Paired .ipynb ↔ markdown workflow       |
+| `:NewNotebook`    | Scaffold a new .ipynb file              |
 
 ### Database
-- **nvim-dbee** — SQL client with connection management and CSV export
-- **vim-dadbod-completion** — database-aware completion via blink.cmp
+
+| Plugin                 | Role                           |
+|------------------------|--------------------------------|
+| nvim-dbee              | SQL client with connections     |
+| vim-dadbod-completion  | DB-aware completion in blink.cmp|
+| CSV/TSV export to `~/Sql/csv/` |                     |
 
 ### Git
-- **gitsigns.nvim** — inline blame, hunk staging, diff preview
-- **neogit** — Magit-like Git UI (status, commit, log, pull, push)
+
+| Plugin            | Role                              |
+|-------------------|-----------------------------------|
+| gitsigns.nvim     | Inline blame, hunk stage/diff     |
+| neogit            | Magit-like Git UI                 |
+| diffview.nvim     | Diff viewer (neogit integration)  |
 
 ### UI & Navigation
-- **nightfox.nvim** — colorscheme (transparent, custom highlights)
-- **lualine.nvim** — statusline + tabline with buffers
-- **which-key.nvim** — keymap popup help
-- **snacks.nvim** — picker (files, grep, buffers, recent, etc.), file explorer, terminal, indent guides, notifier, session management
-- **nvim-ufo** — LSP + treesitter folding, peek folded lines
-- **flash.nvim** — fast cursor motion (`s` / `S`)
-- **render-markdown.nvim** — rendered markdown preview
+
+| Plugin               | Role                               |
+|----------------------|------------------------------------|
+| nightfox.nvim        | Colorscheme (transparent, custom hl)|
+| lualine.nvim         | Statusline + buffer tabline         |
+| which-key.nvim       | Popup keymap help                   |
+| snacks.nvim          | Picker, explorer, terminal, indent, notifier, session, words |
+| nvim-ufo             | LSP + treesitter folding            |
+| flash.nvim           | Label-based cursor jump (`s`/`S`)   |
+| render-markdown.nvim | Rendered markdown preview           |
 
 ### Editing
-- **mini.surround** — `gsa`/`gsd`/`gsr` for surround operations
-- **mini.ai** — treesitter-aware text objects (blocks, functions, classes)
-- **mini.hipatterns** — hex color highlighting
-- **nvim-autopairs** — auto-close brackets
-- **zen-mode.nvim** — distraction-free writing
+
+| Plugin            | Role                           |
+|-------------------|--------------------------------|
+| mini.surround     | `gsa`/`gsd`/`gsr` surround ops |
+| mini.ai           | Treesitter-aware text objects   |
+| mini.hipatterns   | Hex color highlighting          |
+| nvim-treesitter   | Parsers, syntax highlighting    |
+| nvim-ufo          | Code folding                    |
+
+## Keymaps
+
+### Navigation
+
+| Key         | Action              |
+|-------------|---------------------|
+| `<Tab>`     | Next buffer         |
+| `<S-Tab>`   | Previous buffer     |
+| `<leader>bd`| Close buffer        |
+| `<A-h/j/k/l>`| Window movement    |
+| `<C-Arrows>`| Resize windows      |
+
+### Find (Snacks picker)
+
+| Key          | Action            |
+|--------------|-------------------|
+| `<leader>e`  | Explorer          |
+| `<leader>ff` | Files             |
+| `<leader>fg` | Grep              |
+| `<leader>fb` | Buffers           |
+| `<leader>fr` | Recent files      |
+| `<leader>fh` | Help              |
+| `<leader>fk` | Keymaps           |
+| `<leader>fc` | Commands          |
+| `<leader>fw` | Word under cursor |
+
+### LSP
+
+| Key          | Action                |
+|--------------|-----------------------|
+| `gd`         | Go to definition      |
+| `gD`         | Go to declaration     |
+| `gr`         | Find references       |
+| `gi`         | Go to implementation  |
+| `K`          | Hover documentation   |
+| `<C-k>`      | Signature help        |
+| `<leader>lr` | Rename                |
+| `<leader>la` | Code action           |
+| `<leader>lf` | Format                |
+| `<leader>ls` | Buffer symbols        |
+| `<leader>ld` | Hover diagnostic      |
+| `]d` / `[d`  | Next/prev diagnostic  |
+
+### Git
+
+| Key           | Action          |
+|---------------|-----------------|
+| `<leader>gg`  | Neogit status   |
+| `<leader>gc`  | Neogit commit   |
+| `<leader>gl`  | Neogit log      |
+| `<leader>gb`  | Git blame line  |
+| `<leader>gh`  | Preview hunk    |
+| `<leader>gs`  | Stage hunk      |
+| `<leader>gr`  | Reset hunk      |
+| `<leader>gd`  | Diff this       |
+| `]h` / `[h`   | Next/prev hunk  |
+
+### Data Science (Molten)
+
+| Key           | Action              |
+|---------------|---------------------|
+| `<leader>mi`  | Init Python kernel  |
+| `<leader>ms`  | Shared kernel       |
+| `<leader>mR`  | Restart kernel      |
+| `<leader>mI`  | Interrupt kernel    |
+| `<leader>mO`  | Show output window  |
+| `<leader>mc`  | Re-run cell         |
+
+### Quarto / Markdown
+
+| Key           | Action              |
+|---------------|---------------------|
+| `<leader>qa`  | Quarto activate     |
+| `<leader>mr`  | Toggle markdown rendering |
+| `<leader>r`   | Run cell            |
+| `<leader>ra`  | Run all cells       |
+| `<leader>rl`  | Run line            |
+| `<leader>n`   | New Python chunk    |
+
+### Database
+
+| Key           | Action              |
+|---------------|---------------------|
+| `<leader>db`  | Open dbee           |
+| `<leader>dc`  | Export result as CSV|
+
+### Misc
+
+| Key           | Action              |
+|---------------|---------------------|
+| `<C-s>`       | Save file           |
+| `jk`          | Exit insert mode    |
+| `<leader>/`   | Toggle comment line |
+| `<leader>Y`   | Copy entire file    |
+| `<leader>tt`  | Toggle terminal     |
+| `<leader>P`   | Lazy plugin menu    |
+| `<leader>M`   | Mason menu          |
+| `s` / `S`     | Flash jump fwd/bwd  |
 
 ## Getting Started
 
 ```bash
+# Prerequisites
+#   - Neovim >= 0.11
+#   - A Nerd Font (terminal)
+#   - Python 3 + pynvim (for Molten)
+#   - Kitty terminal (for image rendering)
+
 # Backup existing config
 mv ~/.config/nvim ~/.config/nvim.bak
 
 # Clone
 git clone https://github.com/cybersnake223/nvim ~/.config/nvim
 
-# Start Neovim — plugins install automatically
+# Start Neovim — lazy.nvim installs all plugins automatically
 nvim
 
-# (Optional) Install all LSP servers, formatters, and linters
+# Install LSP servers, formatters, and linters
 :MasonInstallAll
 ```
 
-## Keymaps
-
-| Prefix    | Group       |
-|-----------|-------------|
-| `<leader>b` | buffer      |
-| `<leader>d` | database    |
-| `<leader>e` | explorer    |
-| `<leader>f` | find        |
-| `<leader>g` | git         |
-| `<leader>l` | lsp         |
-| `<leader>m` | molten      |
-| `<leader>r` | run         |
-| `<leader>S` | session     |
-| `<leader>t` | terminal    |
-| `<leader>w` | workspace   |
-
-Press `<leader>?` to see buffer-local keymaps via which-key.
-
 ## Requirements
 
-- Neovim >= 0.11
-- Nerd Font (for icons)
-- Python 3 with `pynvim` (for Molten)
-- Kitty terminal (recommended for image rendering)
+- **Neovim** >= 0.11 (uses `vim.lsp.config`, `vim.treesitter.language.register`)
+- **Nerd Font** — for icons in statusline, picker, which-key, etc.
+- **Python 3** with `pynvim` (`pip install pynvim`) — required by Molten
+- **Kitty terminal** — recommended for inline image rendering in notebooks
+- **Optional**: `VIRTUAL_ENV` or `~/.venv` — auto-detected for `python3_host_prog`
