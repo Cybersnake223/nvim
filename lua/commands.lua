@@ -1,0 +1,154 @@
+local create_cmd = vim.api.nvim_create_user_command
+local create_au = vim.api.nvim_create_autocmd
+local augroup = vim.api.nvim_create_augroup
+
+-- ── 1. Mason ─────────────────────────────────────────────
+create_cmd("MasonInstallAll", function()
+  local tools = {
+    "lua-language-server",
+    "ruff",
+    "sqls",
+    "sqlfluff",
+    "bash-language-server",
+    "cssls",
+    "html",
+    "marksman",
+    "prettier",
+    "stylua",
+  }
+  local registry = require "mason-registry"
+  registry.refresh(function()
+    for _, name in ipairs(tools) do
+      local ok, pkg = pcall(registry.get_package, name)
+      if ok then
+        if not pkg:is_installed() then
+          pkg:install()
+          vim.notify("Mason: installing " .. name, vim.log.levels.INFO)
+        end
+      else
+        vim.notify("Mason: unknown package — " .. name, vim.log.levels.WARN)
+      end
+    end
+  end)
+end, { desc = "Install all required LSP/formatters/linters" })
+
+-- ── 2. LspClients ────────────────────────────────────────
+create_cmd("LspClients", function()
+  local clients = vim.lsp.get_clients { bufnr = vim.api.nvim_get_current_buf() }
+  local lines = { "  LSP Clients", string.rep("─", 50) }
+  if #clients == 0 then
+    table.insert(lines, "  No clients attached to this buffer")
+  end
+  for _, c in ipairs(clients) do
+    table.insert(lines, string.format("  ● %-20s id: %d", c.name, c.id))
+    table.insert(lines, string.format("    root : %s", c.root_dir or "—"))
+    table.insert(lines, string.format("    cmd  : %s", vim.inspect(c.config.cmd or {})))
+    table.insert(lines, "")
+  end
+
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.bo[buf].modifiable = false
+  vim.bo[buf].filetype = "lspinfo"
+
+  local width = 60
+  local height = math.min(#lines, math.floor(vim.o.lines * 0.8))
+  vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    width = width,
+    height = height,
+    row = math.floor((vim.o.lines - height) / 2),
+    col = math.floor((vim.o.columns - width) / 2),
+    style = "minimal",
+    border = "rounded",
+    title = " LSP Info ",
+    title_pos = "center",
+  })
+  vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = buf, silent = true })
+  vim.keymap.set("n", "<Esc>", "<cmd>close<cr>", { buffer = buf, silent = true })
+end, { desc = "List attached LSP clients" })
+
+-- ── 3. Highlight on yank ─────────────────────────────────
+create_au("TextYankPost", {
+  group = augroup("HighlightYank", { clear = true }),
+  callback = function()
+    vim.highlight.on_yank { higroup = "Visual", timeout = 200 }
+  end,
+})
+
+-- ── 4. Auto-resize splits on terminal resize ─────────────
+create_au("VimResized", {
+  group = augroup("WindowResize", { clear = true }),
+  callback = function()
+    local tab = vim.fn.tabpagenr()
+    vim.cmd("tabdo wincmd =")
+    pcall(vim.cmd.tabnext, tab)
+  end,
+})
+
+-- ── 5. Remove trailing whitespace on save (fast Lua impl) ─
+create_au("BufWritePre", {
+  group = augroup("TrimWhitespace", { clear = true }),
+  callback = function()
+    if vim.bo.binary or vim.bo.filetype == "diff" then
+      return
+    end
+    local view = vim.fn.winsaveview()
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    for i, line in ipairs(lines) do
+      local trimmed = line:gsub("%s+$", "")
+      if trimmed ~= line then
+        vim.api.nvim_buf_set_lines(0, i - 1, i, false, { trimmed })
+      end
+    end
+    vim.fn.winrestview(view)
+  end,
+})
+
+-- ── 6. Return to last cursor position on file open ───────
+create_au("BufReadPost", {
+  group = augroup("RestoreCursor", { clear = true }),
+  callback = function()
+    local mark = vim.api.nvim_buf_get_mark(0, '"')
+    local line_count = vim.api.nvim_buf_line_count(0)
+    if mark[1] > 0 and mark[1] <= line_count then
+      pcall(vim.api.nvim_win_set_cursor, 0, mark)
+    end
+  end,
+})
+
+-- ── 7. NewNotebook ───────────────────────────────────────
+local default_notebook = [[
+{
+  "cells": [{"cell_type":"markdown","metadata":{},"source":[""]}],
+  "metadata": {
+    "kernelspec": {"display_name":"Python 3","language":"python","name":"python3"},
+    "language_info": {
+      "codemirror_mode":{"name":"ipython"},"file_extension":".py",
+      "mimetype":"text/x-python","name":"python",
+      "nbconvert_exporter":"python","pygments_lexer":"ipython3"
+    }
+  },
+  "nbformat": 4, "nbformat_minor": 5
+}
+]]
+create_cmd("NewNotebook", function(opts)
+  local path = opts.args .. ".ipynb"
+  local f = io.open(path, "w")
+  if not f then
+    vim.notify("Error: could not write " .. path, vim.log.levels.ERROR)
+    return
+  end
+  f:write(default_notebook)
+  f:close()
+  vim.cmd("edit " .. path)
+end, { nargs = 1, complete = "file", desc = "Create a new .ipynb" })
+
+-- ── 8. Make Molten output windows focusable ──────────────
+create_au("BufWinEnter", {
+  pattern = "molten_output",
+  group = augroup("MoltenFocusable", { clear = true }),
+  callback = function()
+    pcall(vim.api.nvim_win_set_config, 0, { focusable = true })
+  end,
+})
