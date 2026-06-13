@@ -86,26 +86,7 @@ create_au("VimResized", {
   end,
 })
 
--- ── 5. Remove trailing whitespace on save (fast Lua impl) ─
-create_au("BufWritePre", {
-  group = augroup("TrimWhitespace", { clear = true }),
-  callback = function()
-    if vim.bo.binary or vim.bo.filetype == "diff" then
-      return
-    end
-    local view = vim.fn.winsaveview()
-    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-    for i, line in ipairs(lines) do
-      local trimmed = line:gsub("%s+$", "")
-      if trimmed ~= line then
-        vim.api.nvim_buf_set_lines(0, i - 1, i, false, { trimmed })
-      end
-    end
-    vim.fn.winrestview(view)
-  end,
-})
-
--- ── 6. Return to last cursor position on file open ───────
+-- ── 5. Return to last cursor position on file open ───────
 create_au("BufReadPost", {
   group = augroup("RestoreCursor", { clear = true }),
   callback = function()

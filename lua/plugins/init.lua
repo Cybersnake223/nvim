@@ -22,7 +22,6 @@ return {
   -- ─────────────────────────────────────────────────────────
   -- Icons
   -- ─────────────────────────────────────────────────────────
-  -- { "nvim-tree/nvim-web-devicons", lazy = true },
   { "echasnovski/mini.icons", lazy = true },
 
   -- ─────────────────────────────────────────────────────────
@@ -239,45 +238,6 @@ return {
   },
 
   -- ─────────────────────────────────────────────────────────
-  -- Diagnostics + TODOs
-  -- ─────────────────────────────────────────────────────────
-  -- {
-  --   "folke/trouble.nvim",
-  --   cmd = "Trouble",
-  --   opts = { focus = true },
-  --   keys = {
-  --     { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (project)" },
-  --     { "<leader>xb", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Diagnostics (buffer)" },
-  --     { "<leader>xs", "<cmd>Trouble symbols toggle<cr>", desc = "Symbols" },
-  --     { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix" },
-  --     { "<leader>xt", "<cmd>Trouble todo toggle<cr>", desc = "TODOs" },
-  --   },
-  -- },
-  --
-  -- {
-  --   "folke/todo-comments.nvim",
-  --   event = "BufReadPost",
-  --   dependencies = { "nvim-lua/plenary.nvim" },
-  --   opts = { signs = false },
-  --   keys = {
-  --     {
-  --       "]t",
-  --       function()
-  --         require("todo-comments").jump_next()
-  --       end,
-  --       desc = "Next TODO",
-  --     },
-  --     {
-  --       "[t",
-  --       function()
-  --         require("todo-comments").jump_prev()
-  --       end,
-  --       desc = "Prev TODO",
-  --     },
-  --   },
-  -- },
-
-  -- ─────────────────────────────────────────────────────────
   -- Surround
   -- ─────────────────────────────────────────────────────────
   {
@@ -347,15 +307,6 @@ return {
   },
 
   -- ─────────────────────────────────────────────────────────
-  -- File Explorer
-  -- ─────────────────────────────────────────────────────────
-  -- {
-  --   "stevearc/oil.nvim",
-  --   lazy = false,
-  --   opts = { view_options = { show_hidden = true } },
-  -- },
-
-  -- ─────────────────────────────────────────────────────────
   -- SQL Database Client
   -- ─────────────────────────────────────────────────────────
   {
@@ -369,8 +320,6 @@ return {
       require("dbee").setup(require "plugins.configs.dbee")
     end,
   },
-
-  -- { "tpope/vim-dadbod", lazy = true },
 
   {
     "kristijanhusak/vim-dadbod-completion",

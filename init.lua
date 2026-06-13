@@ -12,7 +12,7 @@ require "options"
 require "mappings"
 require "commands"
 
-vim.lsp.log.set_level(vim.log.levels.OFF)
+vim.lsp.log.set_level(vim.log.levels.WARN)
 
 -- ─────────────────────────────────────────────────────────
 -- 2. Clipboard detection
@@ -111,16 +111,4 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Big file guard: skip treesitter for data extensions (Snacks bigfile handles size-based)
-vim.api.nvim_create_autocmd("BufReadPre", {
-  group = vim.api.nvim_create_augroup("BigFileGuard", { clear = true }),
-  callback = function(ev)
-    if not ev.file then
-      return
-    end
-    local ext = vim.fn.fnamemodify(ev.file, ":e")
-    if vim.tbl_contains({ "csv", "tsv", "parquet", "arrow", "feather", "log", "json", "xml" }, ext) then
-      vim.b.treesitter_enabled = false
-    end
-  end,
-})
+-- Big file guard handled by snacks.bigfile (size-based, no extension check needed)
