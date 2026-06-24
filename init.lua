@@ -17,15 +17,31 @@ vim.lsp.log.set_level(vim.log.levels.WARN)
 -- ─────────────────────────────────────────────────────────
 -- 2. Clipboard detection
 -- ─────────────────────────────────────────────────────────
-vim.opt.clipboard = ""
-vim.schedule(function()
-  if vim.fn.executable "wl-copy" == 1 then
-    vim.opt.clipboard = "unnamedplus"
-  end
-end)
+if vim.fn.executable "wl-copy" == 1 or vim.fn.executable "xclip" == 1 or vim.fn.executable "xsel" == 1 then
+  vim.opt.clipboard = "unnamedplus"
+end
 
 -- ─────────────────────────────────────────────────────────
--- 3. Lazy.nvim Bootstrap
+-- 3. Direct gf in lua
+-- ─────────────────────────────────────────────────────────
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "lua",
+  callback = function()
+    vim.keymap.set("n", "gf", function()
+      local cfile = vim.fn.expand "<cfile>"
+      local target = cfile:gsub("%.", "/")
+      if target:match "^modules/" then
+        vim.cmd("edit " .. vim.fn.expand "~/.config/hypr/" .. target .. ".lua")
+      else
+        vim.cmd "normal! gf"
+      end
+    end, { buffer = true, silent = true })
+  end,
+})
+
+-- ─────────────────────────────────────────────────────────
+-- 4. Lazy.nvim Bootstrap
 -- ─────────────────────────────────────────────────────────
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -41,7 +57,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- ─────────────────────────────────────────────────────────
--- 4. Lazy.nvim Setup
+-- 5. Lazy.nvim Setup
 -- ─────────────────────────────────────────────────────────
 require("lazy").setup("plugins", {
   checker = { enabled = false },
@@ -71,14 +87,14 @@ require("lazy").setup("plugins", {
 -- lazy.nvim sets loadplugins=false, which prevents Neovim's
 -- built-in rplugin.vim from sourcing the rplugin manifest.
 -- Source it manually so Python rplugin commands (Molten, etc.) work.
-vim.cmd([[
+vim.cmd [[
   if filereadable(stdpath('data') . '/rplugin.vim')
     execute 'source' fnameescape(stdpath('data') . '/rplugin.vim')
   endif
-]])
+]]
 
 -- ─────────────────────────────────────────────────────────
--- 5. Autocommands
+-- 6. Autocommands
 -- ─────────────────────────────────────────────────────────
 
 -- Indentation overrides for Python and SQL
@@ -110,5 +126,3 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.wo.concealcursor = ""
   end,
 })
-
--- Big file guard handled by snacks.bigfile (size-based, no extension check needed)

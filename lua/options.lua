@@ -33,6 +33,7 @@ opt.confirm = true
 opt.shortmess:append "filnxtToOFIc"
 opt.winminwidth = 10
 opt.smoothscroll = true
+opt.sessionoptions:append { "globals", "folds", "localoptions" }
 opt.numberwidth = 2
 
 -- ── Search ───────────────────────────────────────────────

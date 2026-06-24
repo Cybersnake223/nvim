@@ -7,7 +7,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
       return
     end
 
-    -- sqls: disable formatting (let conform/sqlfluff handle it)
     local map = function(mode, lhs, rhs, desc)
       vim.keymap.set(mode, lhs, rhs, { buffer = ev.buf, desc = desc, silent = true })
     end
@@ -19,7 +18,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     map("n", "gt", vim.lsp.buf.type_definition, "Go to Type Definition")
     map("n", "K", vim.lsp.buf.hover, "Hover Documentation")
     map("n", "<C-k>", vim.lsp.buf.signature_help, "Signature Help")
-    map("i", "<C-k>", vim.lsp.buf.signature_help, "Signature Help")
     map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, "Add Workspace Folder")
     map("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, "Remove Workspace Folder")
     map("n", "<leader>wl", function()
@@ -57,17 +55,19 @@ vim.lsp.config("ruff", {
 vim.filetype.add { extension = { mdx = "markdown" } }
 
 -- ── 4. Enable servers ─────────────────────────────────────
-vim.lsp.enable { "lua_ls", "ruff", "sqls", "bashls", "marksman" }
+vim.lsp.enable { "lua_ls", "ruff", "sqls", "bashls", "marksman", "cssls", "html", "jsonls", "yamlls" }
 
 -- ── 5. Diagnostics ────────────────────────────────────────
 vim.diagnostic.config {
   virtual_text = false,
   signs = true,
   underline = true,
-  update_in_insert = false,
+  update_in_insert = true,
   severity_sort = true,
   float = { border = "rounded", source = true, header = "", prefix = "" },
 }
+
+vim.lsp.inlay_hint.enable(true)
 
 vim.api.nvim_create_autocmd("CursorHold", {
   callback = function()

@@ -11,7 +11,7 @@ M.parsers = {
 }
 
 -- Filetypes where TS highlight is deferred (avoids startup spike)
-M.skip_ft = {
+M.defer_ft = {
   markdown        = true,
   markdown_inline = true,
 }
@@ -49,11 +49,11 @@ function M.setup()
       -- Skip special/ignored buffers
       if M.ignore_ft[ft] then return end
 
-      -- Skip if big-file guard set in commands.lua BufReadPre autocmd
-      if vim.b[ev.buf].treesitter_enabled == false then return end
+      -- Skip if big-file guard (set by snacks.bigfile)
+      if vim.b.bigfile then return end
 
       -- Defer markdown to avoid 29ms FileType spike seen in startup profiles
-      if M.skip_ft[ft] then
+      if M.defer_ft[ft] then
         vim.defer_fn(function()
           if vim.api.nvim_buf_is_valid(ev.buf) then
             pcall(vim.treesitter.start, ev.buf)

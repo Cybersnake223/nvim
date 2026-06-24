@@ -76,6 +76,7 @@ map("n", "<leader>qa", ":QuartoActivate<CR>", { desc = "Quarto: Activate" })
 -----------------------------------------------------------
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "dbee_result",
+  group = vim.api.nvim_create_augroup("DbeeResultMappings", { clear = true }),
   callback = function()
     map("n", "<leader>dc", function()
       local timestamp = os.date "%Y%m%d_%H%M%S"

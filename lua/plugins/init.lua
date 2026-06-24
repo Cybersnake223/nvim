@@ -22,7 +22,7 @@ return {
   -- ─────────────────────────────────────────────────────────
   -- Icons
   -- ─────────────────────────────────────────────────────────
-  { "echasnovski/mini.icons", lazy = true },
+  { "echasnovski/mini.icons", event = "VeryLazy" },
 
   -- ─────────────────────────────────────────────────────────
   -- UI: Statusline + Git signs
@@ -117,6 +117,8 @@ return {
     end,
   },
 
+  { "sam4llis/nvim-lua-gf" },
+
   -- ─────────────────────────────────────────────────────────
   -- Completion + Snippets + Autopairs
   -- ─────────────────────────────────────────────────────────
@@ -133,22 +135,23 @@ return {
       {
         "<C-j>",
         function()
-          require("luasnip").jump(-1)
-        end,
-        mode = { "i", "s" },
-        desc = "Snippet: Prev",
-      },
-      {
-        "<C-k>",
-        function()
           require("luasnip").jump(1)
         end,
         mode = { "i", "s" },
         desc = "Snippet: Next",
       },
+      {
+        "<C-k>",
+        function()
+          require("luasnip").jump(-1)
+        end,
+        mode = { "i", "s" },
+        desc = "Snippet: Prev",
+      },
     },
     config = function()
       require("luasnip.loaders.from_vscode").lazy_load()
+      require("luasnip.loaders.from_lua").load { paths = "~/.config/nvim/snippets" }
     end,
   },
 
@@ -177,7 +180,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
     opts = {
-      ensure_installed = { "lua_ls", "ruff", "sqls", "bashls", "marksman" },
+      ensure_installed = { "lua_ls", "ruff", "sqls", "bashls", "marksman", "cssls", "html", "jsonls", "yamlls" },
     },
   },
 
@@ -401,7 +404,7 @@ return {
       {
         "<leader>fw",
         function()
-          require("snacks").picker.grep({ search = vim.fn.expand("<cword>") })
+          require("snacks").picker.grep { search = vim.fn.expand "<cword>" }
         end,
         desc = "Find: Word Under Cursor",
       },
@@ -501,16 +504,18 @@ return {
     ft = { "markdown", "quarto", "ipynb" },
     dependencies = { "3rd/image.nvim" },
     init = function()
-      vim.g.molten_auto_open_output = true
+      vim.g.molten_auto_open_output = false
       vim.g.molten_image_provider = "image.nvim"
       vim.g.molten_wrap_output = false
-      vim.g.molten_virt_text_output = false
-      vim.g.molten_output_win_max_height = 30
-      vim.g.molten_output_win_max_width = 999
-      vim.g.molten_tick_rate = 150
+      vim.g.molten_output_virt_lines = true
+      vim.g.molten_virt_text_output = true
+      vim.g.molten_output_win_max_height = 99999
+      vim.g.molten_output_win_max_width = 99999
+      vim.g.molten_tick_rate = 200
+      vim.g.molten_split_size = 100
       vim.g.molten_output_show_more = true
       vim.g.molten_limit_output_chars = 25000
-      vim.g.molten_virt_text_max_lines = 300
+      vim.g.molten_virt_text_max_lines = 3000
       vim.g.molten_output_show_exec_time = true
       vim.g.molten_cover_empty_lines = true
       vim.g.molten_enter_output_behavior = "open_and_enter"
@@ -626,5 +631,4 @@ return {
       },
     },
   },
-
 }
